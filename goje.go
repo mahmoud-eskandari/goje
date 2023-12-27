@@ -12,7 +12,12 @@ type ContextHandler struct {
 	Ctx context.Context
 }
 
-var DefaultHander *ContextHandler
+type Entity interface {
+	TableName() string
+	Columns() []string
+	GetCtx() *ContextHandler
+	GetParent() *Entity
+}
 
 var (
 	ErrHandlerIsNil = errors.New("Context handler dosen't set properly")
