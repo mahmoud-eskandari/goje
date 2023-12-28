@@ -16,7 +16,7 @@ type Entity interface {
 	TableName() string
 	Columns() []string
 	GetCtx() *ContextHandler
-	GetParent() *Entity
+	GetParent() Entity
 }
 
 var (
