@@ -20,7 +20,8 @@ type Entity interface {
 }
 
 var (
-	ErrHandlerIsNil = errors.New("Context handler dosen't set properly")
+	ErrHandlerIsNil  = errors.New("context handler dosen't set properly")
+	ErrRecursiveLoad = errors.New("recursive load is forbidden")
 )
 
 const (
