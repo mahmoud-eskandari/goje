@@ -42,8 +42,8 @@ func SelectQueryBuilder(Tablename string, Columns []string, Queries []QueryInter
 // ArgumentLessQueryBuilder (Select, Delete) query builder
 func ArgumentLessQueryBuilder(Action, Tablename string, Columns []string, Queries []QueryInterface) (string, []interface{}, error) {
 
-	if Action != Select || Action != Delete {
-		return "", nil, errors.New("This function dosen't support: " + Action)
+	if Action != Select && Action != Delete {
+		return "", nil, errors.New("this function dosen't support: " + Action)
 	}
 
 	query := Action
