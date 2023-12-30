@@ -22,7 +22,7 @@ func (handler *ContextHandler) RawDelete(Tablename string, Queries []QueryInterf
 
 // RawUpdate update entries by map
 // This method dosen't support After,Before Triggers ...
-func (handler *ContextHandler) RawUpdate(Tablename string, Cols map[string]interface{}, Queries []QueryInterface) (int64, error) {
+func (handler *ContextHandler) RawUpdate(Tablename string, Cols map[string]interface{}, Queries ...QueryInterface) (int64, error) {
 	if len(Cols) == 0 {
 		return -1, ErrNoColsSetForUpdate
 	}
