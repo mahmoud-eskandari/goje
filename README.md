@@ -21,8 +21,6 @@ import (
 	"fmt"
 	"log"
 	"time"
-
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/mahmoud-eskandari/goje"
 	models "modDir/models"
 )
