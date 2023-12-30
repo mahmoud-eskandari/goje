@@ -8,8 +8,11 @@ import (
 const (
 	QueryTypeLimit   = "limit"
 	QueryTypeOffset  = "offset"
+	QueryTypeOrder   = "order"
+	QueryTypeHaving  = "having"
 	QueryTypeWhere   = "where"
 	QueryTypeWhereIn = "where in"
+	QueryTypeJoin    = "join"
 )
 
 type QueryInterface interface {
@@ -23,6 +26,12 @@ const (
 	Insert string = "INSERT"
 	Update string = "UPDATE"
 	Delete string = "DELETE"
+
+	Left    string = "LEFT"
+	Right   string = "RIGHT"
+	Inner   string = "INNER"
+	Outer   string = "OUTER"
+	Natural string = "NATURAL"
 )
 
 // make a select ... FROM query
@@ -56,6 +65,18 @@ func SQLConditionBuilder(Tablename string, Queries []QueryInterface) (string, []
 	var args []interface{}
 	var where []string
 
+	//Produce Joins
+	for _, q := range Queries {
+		if q.GetType() == QueryTypeJoin {
+			if strings.Count(q.GetQuery(), "?") != len(q.GetArgs()) {
+				return "", nil, errors.New(q.GetQuery() + "; args dosen't match with binds `?`")
+			}
+			query += q.GetQuery()
+			args = append(args, q.GetArgs()...)
+		}
+	}
+
+	//Produce Where condition
 	for _, q := range Queries {
 		if q.GetType() == QueryTypeWhere {
 			if strings.Count(q.GetQuery(), "?") != len(q.GetArgs()) {
@@ -66,6 +87,7 @@ func SQLConditionBuilder(Tablename string, Queries []QueryInterface) (string, []
 		}
 	}
 
+	//Produce Where in condition
 	for _, q := range Queries {
 		if q.GetType() == QueryTypeWhereIn {
 			if len(q.GetArgs()) == 0 {
@@ -83,6 +105,33 @@ func SQLConditionBuilder(Tablename string, Queries []QueryInterface) (string, []
 		query += " WHERE " + strings.Join(where, " AND ")
 	}
 
+	//Add having
+	for _, q := range Queries {
+		if q.GetType() == QueryTypeHaving {
+
+			if strings.Count(q.GetQuery(), "?") != len(q.GetArgs()) {
+				return "", nil, errors.New(q.GetQuery() + "; args dosen't match with binds `?`")
+			}
+
+			query += " HAVING " + q.GetQuery()
+			args = append(args, q.GetArgs()...)
+		}
+	}
+
+	//Add orders
+	for _, q := range Queries {
+		if q.GetType() == QueryTypeOrder {
+
+			if strings.Count(q.GetQuery(), "?") != len(q.GetArgs()) {
+				return "", nil, errors.New(q.GetQuery() + "; args dosen't match with binds `?`")
+			}
+
+			query += " ORDER BY " + q.GetQuery()
+			args = append(args, q.GetArgs()...)
+		}
+	}
+
+	//Add limitations
 	for _, q := range Queries {
 		if q.GetType() == QueryTypeLimit || q.GetType() == QueryTypeOffset {
 			query += " " + q.GetQuery()
@@ -141,6 +190,62 @@ func Offset(offset int) QueryOffset {
 }
 
 /**
+	order Query
+**/
+
+type QueryOrder struct {
+	query string
+	args  []interface{}
+}
+
+func (o QueryOrder) GetType() string {
+	return QueryTypeOrder
+}
+
+func (o QueryOrder) GetQuery() string {
+	return o.query
+}
+
+func (o QueryOrder) GetArgs() []interface{} {
+	return o.args
+}
+
+func Order(query string, args ...interface{}) QueryOrder {
+	return QueryOrder{
+		query: query,
+		args:  args,
+	}
+}
+
+/**
+	having Query
+**/
+
+type QueryHaving struct {
+	query string
+	args  []interface{}
+}
+
+func (h QueryHaving) GetType() string {
+	return QueryTypeHaving
+}
+
+func (h QueryHaving) GetQuery() string {
+	return h.query
+}
+
+func (h QueryHaving) GetArgs() []interface{} {
+	return h.args
+}
+
+func Having(query string, args ...interface{}) QueryHaving {
+	return QueryHaving{
+		query: query,
+		args:  args,
+	}
+}
+
+/**
 	Where Query
 **/
 
@@ -178,7 +283,7 @@ type QueryWhereIn struct {
 }
 
 func (q QueryWhereIn) GetType() string {
-	return QueryTypeWhereIn
+	return QueryTypeJoin
 }
 
 func (q QueryWhereIn) GetQuery() string {
@@ -193,5 +298,77 @@ func WhereIn(columnName string, args ...interface{}) QueryWhereIn {
 	return QueryWhereIn{
 		query: columnName,
 		args:  args,
+	}
+}
+
+/**
+	Join Query Builder
+**/
+
+type QueryJoin struct {
+	joinType string
+	table    string
+	on       string
+	args     []interface{}
+}
+
+func (q QueryJoin) GetType() string {
+	return QueryTypeWhere
+}
+
+func (q QueryJoin) GetQuery() string {
+	var on string
+	if q.on != "" {
+		on = " ON " + q.on
+	}
+	return q.joinType + " JOIN " + q.table + on
+}
+
+func (q QueryJoin) GetArgs() []interface{} {
+	return q.args
+}
+
+func InnerJoin(table string, on string, args ...interface{}) QueryJoin {
+	return QueryJoin{
+		on:       on,
+		joinType: Inner,
+		table:    table,
+		args:     args,
+	}
+}
+
+func OuterJoin(table string, on string, args ...interface{}) QueryJoin {
+	return QueryJoin{
+		on:       on,
+		joinType: Outer,
+		table:    table,
+		args:     args,
+	}
+}
+
+func NaturalJoin(table string, on string, args ...interface{}) QueryJoin {
+	return QueryJoin{
+		on:       on,
+		joinType: Natural,
+		table:    table,
+		args:     args,
+	}
+}
+
+func RightJoin(table string, on string, args ...interface{}) QueryJoin {
+	return QueryJoin{
+		on:       on,
+		joinType: Right,
+		table:    table,
+		args:     args,
+	}
+}
+
+func LeftJoin(table string, on string, args ...interface{}) QueryJoin {
+	return QueryJoin{
+		on:       on,
+		joinType: Left,
+		table:    table,
+		args:     args,
 	}
 }
