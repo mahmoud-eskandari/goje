@@ -22,7 +22,9 @@ type Entity interface {
 }
 
 var (
-	ErrHandlerIsNil       = errors.New("context handler dosen't set properly")
-	ErrRecursiveLoad      = errors.New("recursive load is forbidden")
-	ErrNoColsSetForUpdate = errors.New("cols should have at least one proprty for update")
+	ErrHandlerIsNil        = errors.New("context handler dosen't set properly")
+	ErrRecursiveLoad       = errors.New("recursive load is forbidden")
+	ErrNoColsSetForUpdate  = errors.New("cols should have at least one proprty for update")
+	ErrNoRowsForInsert     = errors.New("there isn't any row for insert into database")
+	ErrNoRowsColsForInsert = errors.New("cols should have at least one proprty for update")
 )
