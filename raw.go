@@ -62,7 +62,7 @@ func (handler *ContextHandler) RawBulkInsert(Tablename string, Rows []map[string
 	for index, row := range Rows {
 		//use first index as column name index
 		if index == 0 {
-			for colName, _ := range row {
+			for colName := range row {
 				columnNames = append(columnNames, colName)
 			}
 			if len(columnNames) == 0 {
