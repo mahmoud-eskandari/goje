@@ -1,16 +1,25 @@
 # :tomato: Goje
-Lightweight ORM/SQL builder toolkit for golang
+Lightweight SQL to struct generator / ORM toolkit for `Golang`
 
-This package used by default template of [Gojen](https://github.com/mahmoud-eskandari/gojen) as a helper dependency.
-
-# Usage
-
-* install gojen (sql to struct boiler) `go install https://github.com/mahmoud-eskandari/gojen@latest`
-* init configs `gojen init`
-* run `gojen` to build database models from target database
+`This package used by default template of `[Gojen](https://github.com/mahmoud-eskandari/gojen)` as a helper dependency.`
 
 
-# Use generated models
+## Steps
+1. Database &rarr; Go struct:
+	* init configs `gojen init`
+	* run `gojen` to build database models from target database
+
+2. Use generated Go structs in your project.
+
+## Install Gojen (Generator command line tool)
+
+``` Bash
+go install https://github.com/mahmoud-eskandari/gojen@latest
+```
+
+
+
+## Example of using a generated model
 
 ``` Go
 package main
@@ -22,11 +31,11 @@ import (
 	"log"
 	"time"
 	"github.com/mahmoud-eskandari/goje"
-	models "modDir/models"
+	models "__PATH_TO_MODELS_DIR__"
 )
 
-func main() {
-  //init a connection
+func init(){
+	//init a database connection
 	err := goje.ConnectDB(&goje.DBConfig{
 		Driver:      "mysql",
 		Host:        "127.0.0.1",
@@ -36,12 +45,15 @@ func main() {
 		Schema:      "mydb",
 		MaxIdleTime: time.Second * 30,
 	})
+
 	if err != nil {
 		log.Fatal(err)
 	}
+}
 
+func main() {
 	//pass a ctx to get a handler
-  //you should have repeat this command every time in controller
+  	//you should have repeat this command every time in controller
 	handler := goje.DefaultHandler(context.Background())
 
 	//models package and `User` struct... generated in previous stage from database
@@ -70,7 +82,7 @@ func main() {
 	//change some props...
 	user.Balance = 10000
 	//If our object already possesses a handler, passing it again is unnecessary.
-	user.Save(nil)
+	user.Update(nil) //or user.Save(nil)
 
 	//some of helper methods:
 
