@@ -6,7 +6,7 @@ import (
 
 // RawDelete Deletes entries with standard query
 // This method dosen't support After,Before Triggers ...
-func (handler *ContextHandler) RawDelete(Tablename string, Queries []QueryInterface) (int64, error) {
+func (handler *Context) RawDelete(Tablename string, Queries []QueryInterface) (int64, error) {
 	query, args, err := ArgumentLessQueryBuilder(Delete, Tablename, nil, Queries)
 	if err != nil {
 		return -1, err
@@ -22,7 +22,7 @@ func (handler *ContextHandler) RawDelete(Tablename string, Queries []QueryInterf
 
 // RawUpdate update entries by map
 // This method dosen't support After,Before Triggers ...
-func (handler *ContextHandler) RawUpdate(Tablename string, Cols map[string]interface{}, Queries ...QueryInterface) (int64, error) {
+func (handler *Context) RawUpdate(Tablename string, Cols map[string]interface{}, Queries ...QueryInterface) (int64, error) {
 	if len(Cols) == 0 {
 		return -1, ErrNoColsSetForUpdate
 	}
@@ -50,7 +50,7 @@ func (handler *ContextHandler) RawUpdate(Tablename string, Cols map[string]inter
 
 // RawBulkInsert insert multiple entries by []map[column name]value
 // This method dosen't support After,Before Triggers ...
-func (handler *ContextHandler) RawBulkInsert(Tablename string, Rows []map[string]interface{}) (int64, error) {
+func (handler *Context) RawBulkInsert(Tablename string, Rows []map[string]interface{}) (int64, error) {
 	if len(Rows) == 0 {
 		return -1, ErrNoRowsForInsert
 	}

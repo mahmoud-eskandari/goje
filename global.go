@@ -12,12 +12,26 @@ import (
 
 var DefatultDB *sql.DB
 
-// DefaultHandler make a handler from default database
-func DefaultHandler(ctx context.Context) *ContextHandler {
-	return &ContextHandler{
+// MakeHandler make a handler from default database
+func MakeHandler(ctx context.Context) *Context {
+	return &Context{
 		Ctx: ctx,
 		DB:  DefatultDB,
 	}
+}
+
+// DefaultHandler make a handler from default database
+func MakeTxHandler(ctx context.Context, options *sql.TxOptions) (*Context, error) {
+	tx, err := DefatultDB.BeginTx(ctx, options)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Context{
+		Ctx: ctx,
+		DB:  tx,
+		Tx:  true,
+	}, nil
 }
 
 // ConnectDB Connect and set default database
