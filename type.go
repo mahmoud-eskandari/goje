@@ -63,7 +63,6 @@ type Entity interface {
 	TableName() string
 	Columns() []string
 	GetCtx() *Context
-	SetCtx(*Context)
 	GetParent() *Entity
 }
 
