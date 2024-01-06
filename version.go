@@ -1,3 +1,3 @@
 package goje
 
-const Version = "1.0.3"
+const Version = "0.0.1"
