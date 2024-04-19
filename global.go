@@ -55,6 +55,26 @@ func ConnectDB(conn *DBConfig) error {
 	return nil
 }
 
+// ConnectDB Connect and return database
+func NewDBConnection(conn *DBConfig) (*sql.DB, error) {
+	if conn.Driver != "mysql" {
+		return nil, ErrUnknownDBDriver
+	}
+
+	db, err := sql.Open(conn.Driver, conn.String())
+
+	if err != nil {
+		return nil, err
+	}
+
+	db.SetConnMaxIdleTime(conn.MaxIdleTime)
+	db.SetMaxIdleConns(conn.MaxIdleConns)
+	db.SetMaxOpenConns(conn.MaxOpenConns)
+	db.SetConnMaxLifetime(conn.ConnMaxLifetime)
+
+	return db, nil
+}
+
 /*
 Goje database config schema
 # yaml example
