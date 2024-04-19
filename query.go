@@ -283,7 +283,7 @@ type QueryWhereIn struct {
 }
 
 func (q QueryWhereIn) GetType() string {
-	return QueryTypeJoin
+	return QueryTypeWhereIn
 }
 
 func (q QueryWhereIn) GetQuery() string {
