@@ -10,47 +10,15 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// Default Database Connection that fill by
 var DefatultDB *sql.DB
 
-// MakeHandler make a handler from default database
-func MakeHandler(ctx context.Context) *Context {
-	return &Context{
-		Ctx: ctx,
-		DB:  DefatultDB,
-	}
-}
-
-// DefaultHandler make a handler from default database
-func MakeTxHandler(ctx context.Context, options *sql.TxOptions) (*Context, error) {
-	tx, err := DefatultDB.BeginTx(ctx, options)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Context{
-		Ctx: ctx,
-		DB:  tx,
-		Tx:  true,
-	}, nil
-}
-
 // ConnectDB Connect and set default database
-func ConnectDB(conn *DBConfig) error {
-	if conn.Driver != "mysql" {
-		return ErrUnknownDBDriver
-	}
-
-	db, err := sql.Open(conn.Driver, conn.String())
-
+func InitDB(conn *DBConfig) error {
+	db, err := NewDBConnection(conn)
 	if err != nil {
 		return err
 	}
-
-	db.SetConnMaxIdleTime(conn.MaxIdleTime)
-	db.SetMaxIdleConns(conn.MaxIdleConns)
-	db.SetMaxOpenConns(conn.MaxOpenConns)
-	db.SetConnMaxLifetime(conn.ConnMaxLifetime)
-
 	DefatultDB = db
 	return nil
 }
@@ -73,6 +41,36 @@ func NewDBConnection(conn *DBConfig) (*sql.DB, error) {
 	db.SetConnMaxLifetime(conn.ConnMaxLifetime)
 
 	return db, nil
+}
+
+// GetHandler make a handler from default database and a TODO context
+func GetHandler() *Context {
+	return &Context{
+		Ctx: context.TODO(),
+		DB:  DefatultDB,
+	}
+}
+
+// MakeHandler make a handler from default database
+func MakeHandler(ctx context.Context) *Context {
+	return &Context{
+		Ctx: ctx,
+		DB:  DefatultDB,
+	}
+}
+
+// DefaultHandler make a handler from default database
+func MakeTxHandler(ctx context.Context, options *sql.TxOptions) (*Context, error) {
+	tx, err := DefatultDB.BeginTx(ctx, options)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Context{
+		Ctx: ctx,
+		DB:  tx,
+		Tx:  true,
+	}, nil
 }
 
 /*
