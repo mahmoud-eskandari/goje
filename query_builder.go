@@ -49,7 +49,7 @@ func ArgumentLessQueryBuilder(Action, Tablename string, Columns []string, Querie
 	query := Action
 
 	if Action == Select {
-		query += " " + strings.Join(Columns, ",")
+		query += " `" + strings.Join(Columns, "`,`") + "`"
 	}
 
 	query += " FROM " + Tablename
