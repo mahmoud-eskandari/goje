@@ -65,6 +65,8 @@ func columnFilter(in []string) []string {
 	for i, v := range in {
 		if strings.Contains(v, "`") ||
 			strings.Contains(v, "(") ||
+			strings.Contains(v, "*") ||
+			strings.Contains(v, "%") ||
 			strings.Contains(v, " as ") ||
 			strings.Contains(v, " AS ") {
 			continue
