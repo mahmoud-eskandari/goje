@@ -48,8 +48,9 @@ func ArgumentLessQueryBuilder(Action, Tablename string, Columns []string, Querie
 
 	query := Action
 
+	Columns = columnFilter(Columns)
 	if Action == Select {
-		query += " `" + strings.Join(Columns, "`,`") + "`"
+		query += strings.Join(Columns, ",")
 	}
 
 	query += " FROM " + Tablename
@@ -57,6 +58,20 @@ func ArgumentLessQueryBuilder(Action, Tablename string, Columns []string, Querie
 	conditions, args, err := SQLConditionBuilder(Tablename, Queries)
 
 	return query + conditions, args, err
+}
+
+// filter columns then add backtik if need
+func columnFilter(in []string) []string {
+	for i, v := range in {
+		if strings.Contains(v, "`") ||
+			strings.Contains(v, "(") ||
+			strings.Contains(v, " as ") ||
+			strings.Contains(v, " AS ") {
+			continue
+		}
+		in[i] = "`" + v + "`"
+	}
+	return in
 }
 
 // SQLConditionBuilder [JOIN WHERE LIMIT OFFSET] ...builder
