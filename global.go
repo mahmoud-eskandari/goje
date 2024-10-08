@@ -103,5 +103,5 @@ func (db DBConfig) String() string {
 	for k, v := range db.Flags {
 		flags += "&" + k + "=" + url.QueryEscape(v)
 	}
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True"+flags, db.User, db.Password, db.Host, db.Port, db.Schema)
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", db.User, db.Password, db.Host, db.Port, db.Schema) + flags
 }
