@@ -76,6 +76,34 @@ func Order(query string, args ...interface{}) QueryOrder {
 }
 
 /**
+	Group Query
+**/
+
+type QueryGroup struct {
+	query string
+	args  []interface{}
+}
+
+func (h QueryGroup) GetType() string {
+	return QueryTypeGroup
+}
+
+func (h QueryGroup) GetQuery() string {
+	return h.query
+}
+
+func (h QueryGroup) GetArgs() []interface{} {
+	return h.args
+}
+
+func GroupBy(query string, args ...interface{}) QueryGroup {
+	return QueryGroup{
+		query: query,
+		args:  args,
+	}
+}
+
+/**
 	having Query
 **/
 

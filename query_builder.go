@@ -10,6 +10,7 @@ const (
 	QueryTypeOffset  = "offset"
 	QueryTypeOrder   = "order"
 	QueryTypeHaving  = "having"
+	QueryTypeGroup   = "group"
 	QueryTypeWhere   = "where"
 	QueryTypeWhereIn = "where in"
 	QueryTypeJoin    = "join"
@@ -55,7 +56,7 @@ func ArgumentLessQueryBuilder(Action, Tablename string, Columns []string, Querie
 
 	query += " FROM " + Tablename
 
-	conditions, args, err := SQLConditionBuilder(Tablename, Queries)
+	conditions, args, err := SQLConditionBuilder(Queries)
 
 	return query + conditions, args, err
 }
@@ -77,7 +78,7 @@ func columnFilter(in []string) []string {
 }
 
 // SQLConditionBuilder [JOIN WHERE LIMIT OFFSET] ...builder
-func SQLConditionBuilder(Tablename string, Queries []QueryInterface) (string, []interface{}, error) {
+func SQLConditionBuilder(Queries []QueryInterface) (string, []interface{}, error) {
 	query := " "
 	var args []interface{}
 	var where []string
@@ -122,17 +123,36 @@ func SQLConditionBuilder(Tablename string, Queries []QueryInterface) (string, []
 		query += " WHERE " + strings.Join(where, " AND ")
 	}
 
-	//Add having
+	//Add group by
+	var groupbys []string
 	for _, q := range Queries {
-		if q.GetType() == QueryTypeHaving {
-
+		if q.GetType() == QueryTypeGroup {
 			if strings.Count(q.GetQuery(), "?") != len(q.GetArgs()) {
 				return "", nil, errors.New(q.GetQuery() + "; args dosen't match with binds `?`")
 			}
-
-			query += " HAVING " + q.GetQuery()
+			groupbys = append(groupbys, q.GetQuery())
 			args = append(args, q.GetArgs()...)
 		}
+
+	}
+	if len(groupbys) > 0 {
+		query += " GROUP BY " + strings.Join(groupbys, ",")
+	}
+
+	//Add having
+	var havings []string
+	for _, q := range Queries {
+		if q.GetType() == QueryTypeHaving {
+			if strings.Count(q.GetQuery(), "?") != len(q.GetArgs()) {
+				return "", nil, errors.New(q.GetQuery() + "; args dosen't match with binds `?`")
+			}
+			havings = append(havings, q.GetQuery())
+			args = append(args, q.GetArgs()...)
+		}
+	}
+
+	if len(havings) > 0 {
+		query += " HAVING " + strings.Join(havings, " AND ")
 	}
 
 	//Add orders

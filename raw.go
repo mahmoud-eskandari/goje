@@ -34,7 +34,7 @@ func (handler *Context) RawUpdate(Tablename string, Cols map[string]interface{},
 		args = append(args, val)
 	}
 
-	conditions, cargs, err := SQLConditionBuilder(Tablename, Queries)
+	conditions, cargs, err := SQLConditionBuilder(Queries)
 	if err != nil {
 		return -1, err
 	}
