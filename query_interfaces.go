@@ -207,7 +207,7 @@ func (q QueryJoin) GetQuery() string {
 	if q.on != "" {
 		on = " ON " + q.on
 	}
-	return q.joinType + " JOIN " + q.table + on
+	return " " + q.joinType + " JOIN " + q.table + on + " "
 }
 
 func (q QueryJoin) GetArgs() []interface{} {

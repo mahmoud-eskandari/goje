@@ -49,7 +49,7 @@ func ArgumentLessQueryBuilder(Action, Tablename string, Columns []string, Querie
 
 	query := Action
 
-	Columns = columnFilter(Columns)
+	Columns = columnsFilter(Columns)
 	if Action == Select {
 		query += " " + strings.Join(Columns, ",") + " "
 	}
@@ -59,22 +59,6 @@ func ArgumentLessQueryBuilder(Action, Tablename string, Columns []string, Querie
 	conditions, args, err := SQLConditionBuilder(Queries)
 
 	return query + conditions, args, err
-}
-
-// filter columns then add backtik if need
-func columnFilter(in []string) []string {
-	for i, v := range in {
-		if strings.Contains(v, "`") ||
-			strings.Contains(v, "(") ||
-			strings.Contains(v, "*") ||
-			strings.Contains(v, "%") ||
-			strings.Contains(v, " as ") ||
-			strings.Contains(v, " AS ") {
-			continue
-		}
-		in[i] = "`" + v + "`"
-	}
-	return in
 }
 
 // SQLConditionBuilder [JOIN WHERE LIMIT OFFSET] ...builder
@@ -130,7 +114,7 @@ func SQLConditionBuilder(Queries []QueryInterface) (string, []interface{}, error
 			if strings.Count(q.GetQuery(), "?") != len(q.GetArgs()) {
 				return "", nil, errors.New(q.GetQuery() + "; args dosen't match with binds `?`")
 			}
-			groupbys = append(groupbys, q.GetQuery())
+			groupbys = append(groupbys, columnFilter(q.GetQuery()))
 			args = append(args, q.GetArgs()...)
 		}
 
@@ -146,7 +130,7 @@ func SQLConditionBuilder(Queries []QueryInterface) (string, []interface{}, error
 			if strings.Count(q.GetQuery(), "?") != len(q.GetArgs()) {
 				return "", nil, errors.New(q.GetQuery() + "; args dosen't match with binds `?`")
 			}
-			havings = append(havings, q.GetQuery())
+			havings = append(havings, columnFilter(q.GetQuery()))
 			args = append(args, q.GetArgs()...)
 		}
 	}
@@ -177,4 +161,25 @@ func SQLConditionBuilder(Queries []QueryInterface) (string, []interface{}, error
 	}
 
 	return query, args, nil
+}
+
+// filter multiple columns
+func columnsFilter(in []string) []string {
+	for i, _ := range in {
+		in[i] = columnFilter(in[i])
+	}
+	return in
+}
+
+// filter column: add backtik if needed
+func columnFilter(v string) string {
+	if strings.Contains(v, "`") ||
+		strings.Contains(v, " ") ||
+		strings.Contains(v, "(") ||
+		strings.Contains(v, "*") ||
+		strings.Contains(v, "%") ||
+		strings.Contains(v, ".") {
+		return v
+	}
+	return "`" + v + "`"
 }
