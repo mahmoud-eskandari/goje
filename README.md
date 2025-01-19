@@ -14,7 +14,7 @@ Lightweight SQL to struct generator / ORM toolkit for `Golang`
 ## Install Goje (Generator command line tool)
 
 ``` Bash
-go install github.com/mahmoud-eskandari/goje
+go install github.com/mahmoud-eskandari/goje@latest
 ```
 
 ### Supported Databases

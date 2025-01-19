@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"flag"
@@ -12,10 +12,6 @@ import (
 	"github.com/mahmoud-eskandari/goje/internal/repo"
 	"github.com/mahmoud-eskandari/goje/internal/version"
 )
-
-func main() {
-	Execute()
-}
 
 func Execute() {
 	conf := flag.String("c", "config.goje.yaml", "Set config path")
