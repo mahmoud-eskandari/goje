@@ -1,0 +1,19 @@
+db:
+    driver: mysql
+    host: 127.0.0.1
+    port: 3306
+    user: root
+    password: ""
+    schema: database
+    flags: {}
+    MaxIdleTime: 0s
+    MaxOpenConns: 0
+    MaxIdleConns: 0
+    ConnMaxLifetime: 0s
+ignore: []
+tags:
+    - db
+    - json
+pkg: models
+dir: ./models
+replace: true
