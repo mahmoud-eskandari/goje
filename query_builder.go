@@ -165,7 +165,7 @@ func SQLConditionBuilder(Queries []QueryInterface) (string, []interface{}, error
 
 // filter multiple columns
 func columnsFilter(in []string) []string {
-	for i, _ := range in {
+	for i := range in {
 		in[i] = columnFilter(in[i])
 	}
 	return in
